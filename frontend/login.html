@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="./css/login.css" rel="stylesheet" type="text/css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <script src="https://unpkg.com/vue"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Game Store</title>
+</head>
+
+<body>
+
+
+    <div class="container">
+        <div class="wrapper">
+            <form id="login" action="" method="post" name="Login_Form" class="form-signin">
+                <h3 class="form-signin-heading">Sign In</h3>
+                <hr class="colorgraph"><br>
+
+                <input v-model="username" type="text" class="form-control" name="Username" placeholder="Username" required="" autofocus="" />
+                <!-- <input v-model="message"> -->
+                <input v-model="password" type="password" class="form-control" name="Password" placeholder="Password" required="" />
+
+                <button class="btn btn-lg btn-primary btn-block" v-on:click="fungsiLogin()" name="Submit" value="Login">Login</button>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#login',
+        data: {
+            username: '',
+            password: ''
+        },
+
+        methods: {
+            fungsiLogin: function() {
+
+                axios.post('http://localhost:3000/users/signin', {
+                        username: this.username,
+                        password: this.password
+                    })
+                    .then(function(response) {
+
+                        window.localStorage.setItem('access_token', JSON.stringify(response.data.token))
+                        let test = window.localStorage.getItem('access_token')
+                        console.log(test);
+                        if(test!==null){
+                        window.location.href="index.html";
+                        }
+
+
+                    });
+
+
+            }
+        },
+        created: function() {
+            let test = window.localStorage.getItem('access_token')
+            console.log(test);
+            if(test===undefined){
+              console.log('g bisa masuk');
+            }else if (test!==null) {
+                window.location.href="index.html";
+            }
+
+
+
+        }
+    })
+</script>
+
+</html>

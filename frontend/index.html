@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="./css/style.css" rel="stylesheet" type="text/css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <script src="https://unpkg.com/vue"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Game Store</title>
+</head>
+
+<body>
+    <div class="body">
+        <div class="header-menu">
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">WebSiteName</a>
+                    </div>
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#">Home</a></li>
+                        <li><a href="checkout.html">checkout</a></li>
+                        <li><a href="#">basket:<span>{{cartCounter}}</span></a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+
+                        <li><a v-on:click="fungsiLog()" href="login.html"><span class="glyphicon glyphicon-log-in"></span> {{stat}}</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <div id="app" class="content-items">
+            <div class="shop-items">
+                <div class="container-fluid">
+
+                    <div v-for="data in list" class="col-md-3 col-sm-6">
+                        <div class="item">
+                            <img class="img-responsive" v-bind:src="data.img" alt="">
+                            <div class="item-dtls">
+                                <h4><a href="#">{{ data.name }}</a></h4>
+                                <span class="price lblue">{{data.price}}</span>
+                            </div>
+                            <div class="ecom bg-lblue">
+                                <a class="btn" href="#" v-on:click="addToCart(data)" >Add to cart</a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+<script>
+    $(document).ready(function() {
+
+
+
+
+        var app = new Vue({
+            el: '.body',
+            data: {
+                list: [],
+                stat: 'Login',
+                carts:[],
+                cartCounter:0
+
+
+            },
+            methods: {
+                seeddata: function() {
+                    axios.get(`http://localhost:3000/games/`)
+                        .then(function(response) {
+                            app.list = response.data
+
+                        })
+                        .catch(function(error) {
+                            console.log(error);
+                        });
+                },
+                fungsiLog: function() {
+                    window.localStorage.removeItem('access_token')
+                    this.stat = 'login'
+                },
+                addToCart: function(data){
+                  let bool=false;
+                  data.count=1
+
+                  // console.log(data);
+                  this.cartCounter+=1
+
+                  // this.carts.forEach(cart=>{
+                  //   if(cart._id ===data._id){
+                  //     console.log('masuk');
+                  //     bool=true
+                  //     console.log(cart.count);
+                  //     cart.count=cart.count+1
+                  //     console.log(cart.count);
+                  //   }
+                  // })
+
+                  this.carts.reduce(function(element,index,array){
+                    if(element._id===data._id){
+                      bool=true
+                      element.count+=1
+                    }
+
+                  })
+
+
+                  if (bool===false){
+                    this.carts.push(data)
+                  }
+
+
+
+
+                  console.log(this.carts);
+
+                }
+            },
+            created: function() {
+                let test = window.localStorage.getItem('access_token')
+                if (test !== null) {
+                    this.stat = 'logout'
+                }
+
+
+                this.seeddata()
+
+            }
+        })
+
+
+
+
+    });
+</script>
+
+</html>
